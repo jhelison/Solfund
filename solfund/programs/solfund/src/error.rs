@@ -13,4 +13,6 @@ pub enum ErrorCode {
     CampaignURITooBig,
     #[msg("Campaign title must be provided")]
     CampaignTitleEmpty,
+    #[msg("Can't interact with a expired campaign")]
+    InteractionWithClosedCampaign,
 }

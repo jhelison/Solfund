@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 
 use crate::error::ErrorCode;
-use crate::states::campaign::{Campaign, METADATA_URI_LENGTH, TITLE_LENGTH};
+use crate::states::campaign::*;
 
 const SECONDS_PER_DAY: i64 = 60 * 60 * 24;
 
@@ -13,9 +13,9 @@ pub struct NewCampaign<'info> {
     #[account(
         // Initialize the account
         init,
-        // The seeds are string campaign, the owner bytes and 
+        // The seeds are string campaign, the owner bytes and the title
         seeds = [
-            b"Campaign",
+            b"Campaign".as_ref(),
             owner.key().to_bytes().as_ref(),
             title.as_bytes().as_ref(),
         ],
@@ -36,7 +36,7 @@ pub struct NewCampaign<'info> {
     pub system_program: Program<'info, System>,
 }
 
-/// Handle the create of a new campaign
+/// Handle the creation of a new campaign
 /// The following is checked for a good campaign:
 /// 1. The end date must be in the future and have at least one day
 /// 2. The goal must not be zero
@@ -51,7 +51,7 @@ pub fn handle_new_campaign(
     // Get the current timestamp for validations
     let curr_timestamp = Clock::get()?.unix_timestamp;
 
-    // The campaign must last at least one day
+    // The campaign must  be at least one day
     require!(
         end_ts >= (curr_timestamp + SECONDS_PER_DAY),
         ErrorCode::CampaignTsNotBigEnough,

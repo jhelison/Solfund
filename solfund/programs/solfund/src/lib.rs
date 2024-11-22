@@ -3,6 +3,9 @@
 /// 1. Proposal creation
 /// 2. Adding new milestones
 /// 3. Create new contributions
+///
+/// TODO:
+/// - Add a update contribution
 
 use anchor_lang::prelude::*;
 use instructions::*;
@@ -13,10 +16,12 @@ pub mod error;
 pub mod instructions;
 pub mod states;
 
+/// This is main entrypoint for the program
 #[program]
 pub mod solfund {
     use super::*;
 
+    /// Creates a new campaign
     pub fn new_campaign(
         ctx: Context<NewCampaign>,
         title: String,
@@ -25,5 +30,20 @@ pub mod solfund {
         metadata_uri: String,
     ) -> Result<()> {
         handle_new_campaign(ctx, title, goal, end_ts, metadata_uri)
+    }
+
+    /// Creates a new contribution
+    pub fn new_contribution(
+        ctx: Context<NewContribution>,
+        amount: u64,
+    ) -> Result<()> {
+        handle_new_contribution(ctx, amount)
+    }
+
+    /// Remove a contribution
+    pub fn remove_contribution(
+        ctx: Context<RemoveContribution>,
+    ) -> Result<()> {
+        handle_remove_contribution(ctx)
     }
 }
