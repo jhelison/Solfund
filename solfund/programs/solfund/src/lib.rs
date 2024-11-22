@@ -19,10 +19,11 @@ pub mod solfund {
 
     pub fn new_campaign(
         ctx: Context<NewCampaign>,
+        title: String,
         goal: u64,
         end_ts: i64,
         metadata_uri: String,
     ) -> Result<()> {
-        handle_new_campaign(ctx, goal, end_ts, metadata_uri)
+        handle_new_campaign(ctx, title, goal, end_ts, metadata_uri)
     }
 }

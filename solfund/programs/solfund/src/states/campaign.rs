@@ -2,6 +2,8 @@ use anchor_lang::prelude::*;
 
 /// The max size for the metadata URI
 pub const METADATA_URI_LENGTH: usize = 64;
+/// The title of the campaign
+pub const TITLE_LENGTH: usize = 32;
 
 /// Represents a funding campaign on the system
 #[account]
@@ -13,6 +15,10 @@ pub struct Campaign {
     pub owner: Pubkey,
     /// The goal of the campaign (in lamports)
     pub goal: u64,
+    /// The title of the campaign
+    pub title: [u8; TITLE_LENGTH],
+    /// The length of the title
+    pub title_length: u16,
     /// When the campaign has started (unix timestamp)
     pub start_ts: i64,
     /// When the campaign will end (unix timestamp)

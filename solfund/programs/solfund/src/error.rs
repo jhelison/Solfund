@@ -11,4 +11,6 @@ pub enum ErrorCode {
     CampaignURIEmpty,
     #[msg("Campaign Metadata URI is too big")]
     CampaignURITooBig,
+    #[msg("Campaign title must be provided")]
+    CampaignTitleEmpty,
 }

@@ -1,13 +1,13 @@
 use anchor_lang::prelude::*;
 
-use crate::states::campaign::{Campaign, METADATA_URI_LENGTH};
 use crate::error::ErrorCode;
+use crate::states::campaign::{Campaign, METADATA_URI_LENGTH, TITLE_LENGTH};
 
 const SECONDS_PER_DAY: i64 = 60 * 60 * 24;
 
 /// Accounts for the new_campaign
 #[derive(Accounts)]
-#[instruction(end_ts: i64)]
+#[instruction(title: String)]
 pub struct NewCampaign<'info> {
     /// [Campaign]
     #[account(
@@ -17,7 +17,7 @@ pub struct NewCampaign<'info> {
         seeds = [
             b"Campaign",
             owner.key().to_bytes().as_ref(),
-            end_ts.to_le_bytes().as_ref(),
+            title.as_bytes().as_ref(),
         ],
         // The bump of the account
         bump,
@@ -43,6 +43,7 @@ pub struct NewCampaign<'info> {
 /// 3. The IPFS metadata must be valid
 pub fn handle_new_campaign(
     ctx: Context<NewCampaign>,
+    title: String,
     goal: u64,
     end_ts: i64,
     metadata_uri: String,
@@ -52,35 +53,40 @@ pub fn handle_new_campaign(
 
     // The campaign must last at least one day
     require!(
-        end_ts > (curr_timestamp + SECONDS_PER_DAY),
+        end_ts >= (curr_timestamp + SECONDS_PER_DAY),
         ErrorCode::CampaignTsNotBigEnough,
     );
 
     // The goal must be bigger than zero
-    require!(
-        goal > 0,
-        ErrorCode::CampaignZeroGoal,
-    );
+    require!(goal > 0, ErrorCode::CampaignZeroGoal,);
 
     // The IPFS metadata must be valid
     // TODO: Improve me, for now we check if it's empty and if it's whiting the max size
     let trimmed_uri = metadata_uri.trim();
-    require!(
-        !trimmed_uri.is_empty(),
-        ErrorCode::CampaignURIEmpty,
-    );
+    require!(!trimmed_uri.is_empty(), ErrorCode::CampaignURIEmpty,);
     require!(
         trimmed_uri.as_bytes().len() <= METADATA_URI_LENGTH,
-        ErrorCode::CampaignURITooBig,  
+        ErrorCode::CampaignURITooBig,
     );
+
+    // Check the title, since we using as seed the max is already 32 bytes
+    let trimmed_title = title.trim();
+    require!(!trimmed_title.is_empty(), ErrorCode::CampaignTitleEmpty,);
 
     // Create the account and update the fields
     let campaign = &mut ctx.accounts.campaign;
+
     // First the IPFS
     let mut ipfs_metadata_data = [0u8; METADATA_URI_LENGTH];
     ipfs_metadata_data[..trimmed_uri.as_bytes().len()].copy_from_slice(trimmed_uri.as_bytes());
     campaign.metadata_uri = ipfs_metadata_data;
     campaign.metadata_uri_length = trimmed_uri.as_bytes().len() as u16;
+
+    // Second the title
+    let mut title_data = [0u8; TITLE_LENGTH];
+    title_data[..trimmed_title.as_bytes().len()].copy_from_slice(trimmed_title.as_bytes());
+    campaign.title = title_data;
+    campaign.title_length = trimmed_title.as_bytes().len() as u16;
 
     // Store the remaining data
     campaign.bump = ctx.bumps.campaign;
@@ -93,8 +99,9 @@ pub fn handle_new_campaign(
     campaign.is_withdrawn = false;
 
     // Log a message
-    msg!{
-        "New campaign created with owner = {}, goal = {}, start_ts = {}, end_ts = {}, metadata_uri = {}",
+    msg! {
+        "New campaign created with title = {}, owner = {}, goal = {}, start_ts = {}, end_ts = {}, metadata_uri = {}",
+        trimmed_title,
         campaign.owner,
         campaign.goal,
         campaign.start_ts,
