@@ -1,7 +1,7 @@
 use anchor_lang::{prelude::*, solana_program};
 
 use crate::error::ErrorCode;
-use crate::states::campaign::{self, Campaign};
+use crate::states::campaign::Campaign;
 use crate::states::contribution::*;
 
 /// Accounts for a remove contribution
@@ -58,8 +58,12 @@ pub fn handle_remove_contribution(ctx: Context<RemoveContribution>) -> Result<()
 
     // Invoke the send instruction
     solana_program::program::invoke(
-        &solana_program::system_instruction::transfer( &campaign.key(), &contribution.key(),contribution.amount),
-        &[campaign.to_account_info(), contribution.to_account_info(), ],
+        &solana_program::system_instruction::transfer(
+            &campaign.key(),
+            &contribution.key(),
+            contribution.amount,
+        ),
+        &[campaign.to_account_info(), contribution.to_account_info()],
     )?;
 
     // Update the campaign
