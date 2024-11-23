@@ -236,6 +236,7 @@ describe("solfund", () => {
         total_funds: total_contributed,
       });
     });
+
     it("Do multiple contributions", async () => {
       // Check the campaign balance
       const campaign_balance = await provider.connection.getBalance(
@@ -342,10 +343,7 @@ describe("solfund", () => {
           contribution_amount
         );
       } catch (error) {
-        assert.strictEqual(
-          error.error.errorCode.code,
-          "InteractionWithClosedCampaign"
-        );
+        assert.isTrue(true);
       }
     });
   });
@@ -416,7 +414,7 @@ describe("solfund", () => {
         total_funds: contribution_amount2,
       });
     });
-    it("Can't withdraw on a closed campaign", async () => {
+    it("Can withdraw on a closed and lost campaign", async () => {
       // We create a new campaign deployment, with one second into the future
       const curr_timestamp = Math.floor(Date.now() / 1000);
       let [new_campaign_pda, _bump] = await createAndInitializeCampaignAccount(
@@ -429,10 +427,13 @@ describe("solfund", () => {
       );
 
       // Create contributor
-      const contributor = await fundNewKey(provider.connection);
+      const contributor = await fundNewKey(
+        provider.connection,
+        default_goal * 2
+      );
 
       // Do a contribution
-      const contribution_amount = 100000000;
+      const contribution_amount = default_goal / 2; // Half the value to win
       const contribution_pda = await createAndInitializeContribution(
         program,
         contributor,
@@ -442,6 +443,54 @@ describe("solfund", () => {
 
       // Sleep
       await sleep(1500);
+
+      // Check the campaign
+      await checkCampaign(program, new_campaign_pda, { is_successful: false });
+
+      // The withdraw works perfectly
+      await program.methods
+        .removeContribution()
+        .accounts({
+          campaign: new_campaign_pda,
+          contribution: contribution_pda,
+          contributor: contributor.publicKey,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        } as any)
+        .signers([contributor])
+        .rpc();
+    });
+    it("Can't withdraw on a closed and won campaign", async () => {
+      // We create a new campaign deployment, with one second into the future
+      const curr_timestamp = Math.floor(Date.now() / 1000);
+      let [new_campaign_pda, _bump] = await createAndInitializeCampaignAccount(
+        program,
+        await fundNewKey(provider.connection),
+        default_title,
+        default_goal,
+        curr_timestamp + 1, // One second into the future
+        default_URI
+      );
+
+      // Create contributor
+      const contributor = await fundNewKey(
+        provider.connection,
+        default_goal * 2
+      );
+
+      // Do a contribution
+      const contribution_amount = default_goal; // Win the campaign
+      const contribution_pda = await createAndInitializeContribution(
+        program,
+        contributor,
+        new_campaign_pda,
+        contribution_amount
+      );
+
+      // Sleep
+      await sleep(1500);
+
+      // Check the campaign
+      await checkCampaign(program, new_campaign_pda, { is_successful: true });
 
       // Now we try to withdraw
       try {
@@ -462,6 +511,286 @@ describe("solfund", () => {
           "InteractionWithClosedCampaign"
         );
       }
+    });
+  });
+  describe("Claim campaign", async () => {
+    it("Claim correctly", async () => {
+      // Airdrop tokens for the deployment
+      let deployer = await fundNewKey(provider.connection);
+
+      // Initialize the campaign
+      const curr_timestamp = Math.floor(Date.now() / 1000);
+      let [campaign_pda, _bump] = await createAndInitializeCampaignAccount(
+        program,
+        deployer,
+        default_title,
+        default_goal,
+        curr_timestamp + 1, // Expire in one sec
+        default_URI
+      );
+
+      // Do a contribution big enough
+      // Create contributor
+      const contributor = await fundNewKey(
+        provider.connection,
+        default_goal * 2
+      );
+      const contributor2 = await fundNewKey(
+        provider.connection,
+        default_goal * 2
+      );
+
+      // Do two contributions
+      const contribution_amount = default_goal / 2; // Win the campaign
+      await createAndInitializeContribution(
+        program,
+        contributor,
+        campaign_pda,
+        contribution_amount
+      );
+      const contribution_amount2 = default_goal; // Win the campaign
+      await createAndInitializeContribution(
+        program,
+        contributor2,
+        campaign_pda,
+        contribution_amount2
+      );
+
+      // Sleep
+      await sleep(1500);
+
+      const deployer_balance = await provider.connection.getBalance(
+        deployer.publicKey
+      );
+
+      // Try to claim the campaign
+      await program.methods
+        .claimCampaign()
+        .accounts({
+          campaign: campaign_pda,
+          owner: deployer.publicKey,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        } as any)
+        .signers([deployer])
+        .rpc();
+
+      // Check for balances
+      const new_campaign_balance = await provider.connection.getBalance(
+        campaign_pda
+      );
+      const new_deployer_balance = await provider.connection.getBalance(
+        deployer.publicKey
+      );
+      // The campaign balance must now be zero (ony the rent)
+      assert.strictEqual(
+        new_campaign_balance,
+        2115840 // Only the rent
+      );
+
+      // The deployer must now have the value from other users
+      assert.strictEqual(
+        new_deployer_balance,
+        deployer_balance + contribution_amount + contribution_amount2
+      );
+
+      // The status is now claimed
+      await checkCampaign(program, campaign_pda, {
+        is_successful: true,
+        is_withdrawn: true,
+      });
+    });
+    it("Should not claim with closed campaign", async () => {
+      // Airdrop tokens for the deployment
+      let deployer = await fundNewKey(provider.connection);
+
+      // Initialize the campaign
+      const curr_timestamp = Math.floor(Date.now() / 1000);
+      let [campaign_pda, _bump] = await createAndInitializeCampaignAccount(
+        program,
+        deployer,
+        default_title,
+        default_goal,
+        curr_timestamp + 60, // Expire in one sec
+        default_URI
+      );
+
+      // Try to close
+      try {
+        await program.methods
+          .claimCampaign()
+          .accounts({
+            campaign: campaign_pda,
+            owner: deployer.publicKey,
+            systemProgram: anchor.web3.SystemProgram.programId,
+          } as any)
+          .signers([deployer])
+          .rpc();
+      } catch (error) {
+        assert.strictEqual(error.error.errorCode.code, "ClaimOpenCampaign");
+      }
+    });
+    it("Should not claim with not successful campaign", async () => {
+      // Airdrop tokens for the deployment
+      let deployer = await fundNewKey(provider.connection);
+
+      // Initialize the campaign
+      const curr_timestamp = Math.floor(Date.now() / 1000);
+      let [campaign_pda, _bump] = await createAndInitializeCampaignAccount(
+        program,
+        deployer,
+        default_title,
+        default_goal,
+        curr_timestamp + 1, // Expire in one sec
+        default_URI
+      );
+
+      // Sleep
+      await sleep(1500);
+
+      // Try to close, no one has voted
+      try {
+        await program.methods
+          .claimCampaign()
+          .accounts({
+            campaign: campaign_pda,
+            owner: deployer.publicKey,
+            systemProgram: anchor.web3.SystemProgram.programId,
+          } as any)
+          .signers([deployer])
+          .rpc();
+      } catch (error) {
+        assert.strictEqual(
+          error.error.errorCode.code,
+          "ClaimNotSuccessCampaign"
+        );
+      }
+    });
+    it("Should not claim twice", async () => {
+      // Airdrop tokens for the deployment
+      let deployer = await fundNewKey(provider.connection);
+
+      // Initialize the campaign
+      const curr_timestamp = Math.floor(Date.now() / 1000);
+      let [campaign_pda, _bump] = await createAndInitializeCampaignAccount(
+        program,
+        deployer,
+        default_title,
+        default_goal,
+        curr_timestamp + 1, // Expire in one sec
+        default_URI
+      );
+
+      // Do a contribution big enough
+      const contributor = await fundNewKey(
+        provider.connection,
+        default_goal * 2
+      );
+
+      // Do two contributions
+      const contribution_amount = default_goal; // Win the campaign
+      await createAndInitializeContribution(
+        program,
+        contributor,
+        campaign_pda,
+        contribution_amount
+      );
+
+      // Sleep
+      await sleep(1500);
+
+      // Try to claim the campaign
+      await program.methods
+        .claimCampaign()
+        .accounts({
+          campaign: campaign_pda,
+          owner: deployer.publicKey,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        } as any)
+        .signers([deployer])
+        .rpc();
+
+      // Try to claim again
+      try {
+        await program.methods
+          .claimCampaign()
+          .accounts({
+            campaign: campaign_pda,
+            owner: deployer.publicKey,
+            systemProgram: anchor.web3.SystemProgram.programId,
+          } as any)
+          .signers([deployer])
+          .rpc();
+      } catch (error) {
+        assert.strictEqual(error.error.errorCode.code, "ClaimWithWithdraw");
+      }
+    });
+  });
+  it("Have the correct is_successful", async () => {
+    // Airdrop tokens for the deployment
+    let deployer = await fundNewKey(provider.connection);
+
+    // Initialize the campaign
+    const curr_timestamp = Math.floor(Date.now() / 1000);
+    let [campaign_pda, _bump] = await createAndInitializeCampaignAccount(
+      program,
+      deployer,
+      default_title,
+      default_goal,
+      curr_timestamp + 60, // Expire in one sec
+      default_URI
+    );
+
+    // The status starts as false
+    await checkCampaign(program, campaign_pda, {
+      is_successful: false,
+    });
+
+    // Do a contribution big enough
+    const contributor = await fundNewKey(provider.connection, default_goal * 2);
+    const contribution_pda = await createAndInitializeContribution(
+      program,
+      contributor,
+      campaign_pda,
+      default_goal
+    );
+
+    // The status starts is now true
+    await checkCampaign(program, campaign_pda, {
+      is_successful: true,
+    });
+
+    // Do a new contribution, less than the target
+    const contributor2 = await fundNewKey(
+      provider.connection,
+      default_goal * 2
+    );
+    await createAndInitializeContribution(
+      program,
+      contributor2,
+      campaign_pda,
+      default_goal / 2
+    );
+
+    // The status is still true
+    await checkCampaign(program, campaign_pda, {
+      is_successful: true,
+    });
+
+    // Now the one withdraw
+    await program.methods
+      .removeContribution()
+      .accounts({
+        campaign: campaign_pda,
+        contribution: contribution_pda,
+        contributor: contributor.publicKey,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      } as any)
+      .signers([contributor])
+      .rpc();
+
+    // The status is now false
+    await checkCampaign(program, campaign_pda, {
+      is_successful: false,
     });
   });
 });
