@@ -15,4 +15,6 @@ pub enum ErrorCode {
     CampaignTitleEmpty,
     #[msg("Can't interact with a expired campaign")]
     InteractionWithClosedCampaign,
+    #[msg("Contribution can't be zero")]
+    ZeroContribution
 }

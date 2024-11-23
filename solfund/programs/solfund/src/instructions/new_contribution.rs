@@ -57,6 +57,9 @@ pub fn handle_new_contribution(ctx: Context<NewContribution>, amount: u64) -> Re
         ErrorCode::InteractionWithClosedCampaign,
     );
 
+    // The value must be bigger than zero
+    require!(amount > 0, ErrorCode::ZeroContribution,);
+
     // Invoke the send instruction
     solana_program::program::invoke(
         &solana_program::system_instruction::transfer(contributor.key, &campaign.key(), amount),

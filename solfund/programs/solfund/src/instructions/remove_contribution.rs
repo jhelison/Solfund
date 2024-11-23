@@ -1,4 +1,4 @@
-use anchor_lang::{prelude::*, solana_program};
+use anchor_lang::prelude::*;
 
 use crate::error::ErrorCode;
 use crate::states::campaign::Campaign;
@@ -46,6 +46,7 @@ pub fn handle_remove_contribution(ctx: Context<RemoveContribution>) -> Result<()
     // Select the accounts
     let contribution = &ctx.accounts.contribution;
     let campaign = &mut ctx.accounts.campaign;
+    let contributor = &mut ctx.accounts.contributor;
 
     // Get the current timestamp for validations
     let curr_timestamp = Clock::get()?.unix_timestamp;
@@ -56,15 +57,9 @@ pub fn handle_remove_contribution(ctx: Context<RemoveContribution>) -> Result<()
         ErrorCode::InteractionWithClosedCampaign,
     );
 
-    // Invoke the send instruction
-    solana_program::program::invoke(
-        &solana_program::system_instruction::transfer(
-            &campaign.key(),
-            &contribution.key(),
-            contribution.amount,
-        ),
-        &[campaign.to_account_info(), contribution.to_account_info()],
-    )?;
+    // Transfer the amounts
+    **campaign.to_account_info().try_borrow_mut_lamports()? -= contribution.amount;
+    **contributor.to_account_info().try_borrow_mut_lamports()? += contribution.amount;
 
     // Update the campaign
     campaign.total_funds -= contribution.amount;

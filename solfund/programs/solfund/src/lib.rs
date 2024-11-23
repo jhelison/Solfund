@@ -1,3 +1,4 @@
+#![allow(unexpected_cfgs)] // Suppress annoying warnings
 /// A program to create funding campaigns
 /// This has a basic implementation that encompass:
 /// 1. Proposal creation
@@ -6,6 +7,8 @@
 ///
 /// TODO:
 /// - Add a update contribution
+/// - Add a update campaign owner
+/// - Add a update metadata uri
 
 use anchor_lang::prelude::*;
 use instructions::*;

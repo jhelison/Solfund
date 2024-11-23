@@ -3,8 +3,6 @@ use anchor_lang::prelude::*;
 use crate::error::ErrorCode;
 use crate::states::campaign::*;
 
-const SECONDS_PER_DAY: i64 = 60 * 60 * 24;
-
 /// Accounts for the new_campaign
 #[derive(Accounts)]
 #[instruction(title: String)]
@@ -52,10 +50,7 @@ pub fn handle_new_campaign(
     let curr_timestamp = Clock::get()?.unix_timestamp;
 
     // The campaign must  be at least one day
-    require!(
-        end_ts >= (curr_timestamp + SECONDS_PER_DAY),
-        ErrorCode::CampaignTsNotBigEnough,
-    );
+    require!(end_ts >= curr_timestamp, ErrorCode::CampaignTsNotBigEnough,);
 
     // The goal must be bigger than zero
     require!(goal > 0, ErrorCode::CampaignZeroGoal,);
