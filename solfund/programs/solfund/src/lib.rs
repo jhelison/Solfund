@@ -9,7 +9,6 @@
 /// - Add a update contribution
 /// - Add a update campaign owner
 /// - Add a update metadata uri
-
 use anchor_lang::prelude::*;
 use instructions::*;
 
@@ -36,25 +35,25 @@ pub mod solfund {
     }
 
     /// Claim a campaign
-    pub fn claim_campaign(
-        ctx: Context<ClaimCampaign>,
-    ) -> Result<()> {
+    pub fn claim_campaign(ctx: Context<ClaimCampaign>) -> Result<()> {
         handle_claim_campaign(ctx)
     }
 
     /// Creates a new contribution
-    pub fn new_contribution(
-        ctx: Context<NewContribution>,
-        amount: u64,
-    ) -> Result<()> {
+    pub fn new_contribution(ctx: Context<NewContribution>, amount: u64) -> Result<()> {
         handle_new_contribution(ctx, amount)
     }
 
     /// Remove a contribution
-    pub fn remove_contribution(
-        ctx: Context<RemoveContribution>,
-    ) -> Result<()> {
+    pub fn remove_contribution(ctx: Context<RemoveContribution>) -> Result<()> {
         handle_remove_contribution(ctx)
     }
 
+    /// Update a campaign URI
+    pub fn update_campaign_uri(
+        ctx: Context<UpdateCampaignURI>,
+        metadata_uri: String,
+    ) -> Result<()> {
+        handle_update_campaign_uri(ctx, metadata_uri)
+    }
 }
