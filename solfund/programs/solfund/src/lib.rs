@@ -35,6 +35,13 @@ pub mod solfund {
         handle_new_campaign(ctx, title, goal, end_ts, metadata_uri)
     }
 
+    /// Claim a campaign
+    pub fn claim_campaign(
+        ctx: Context<ClaimCampaign>,
+    ) -> Result<()> {
+        handle_claim_campaign(ctx)
+    }
+
     /// Creates a new contribution
     pub fn new_contribution(
         ctx: Context<NewContribution>,
@@ -49,4 +56,5 @@ pub mod solfund {
     ) -> Result<()> {
         handle_remove_contribution(ctx)
     }
+
 }

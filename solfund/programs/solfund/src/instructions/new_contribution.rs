@@ -72,7 +72,8 @@ pub fn handle_new_contribution(ctx: Context<NewContribution>, amount: u64) -> Re
     contribution.contributor = contributor.key();
 
     // Update the campaign
-    campaign.total_funds += contribution.amount;
+    campaign.total_funds = campaign.total_funds.checked_add(contribution.amount).ok_or(ErrorCode::ArithmeticError)?;
+    campaign.is_successful = campaign.total_funds >= campaign.goal;
 
     // Log a message
     msg! {

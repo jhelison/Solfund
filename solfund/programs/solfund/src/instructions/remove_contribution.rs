@@ -51,9 +51,9 @@ pub fn handle_remove_contribution(ctx: Context<RemoveContribution>) -> Result<()
     // Get the current timestamp for validations
     let curr_timestamp = Clock::get()?.unix_timestamp;
 
-    // The campaign must be open
+    // The campaign must either be open or closed but not successful
     require!(
-        campaign.end_ts >= curr_timestamp,
+        campaign.end_ts >= curr_timestamp || !campaign.is_successful,
         ErrorCode::InteractionWithClosedCampaign,
     );
 
@@ -62,7 +62,8 @@ pub fn handle_remove_contribution(ctx: Context<RemoveContribution>) -> Result<()
     **contributor.to_account_info().try_borrow_mut_lamports()? += contribution.amount;
 
     // Update the campaign
-    campaign.total_funds -= contribution.amount;
+    campaign.total_funds = campaign.total_funds.checked_sub(contribution.amount).ok_or(ErrorCode::ArithmeticError)?;
+    campaign.is_successful = campaign.total_funds >= campaign.goal;
 
     // Log a message
     msg! {

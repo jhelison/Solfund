@@ -16,5 +16,15 @@ pub enum ErrorCode {
     #[msg("Can't interact with a expired campaign")]
     InteractionWithClosedCampaign,
     #[msg("Contribution can't be zero")]
-    ZeroContribution
+    ZeroContribution,
+    #[msg("Account is not authorized to execute this instruction")]
+    Unauthorized,
+    #[msg("Arithmetic Error (overflow/underflow)")]
+    ArithmeticError,
+    #[msg("Can't claim on open campaign")]
+    ClaimOpenCampaign,
+    #[msg("Can't claim on a not successful campaign")]
+    ClaimNotSuccessCampaign,
+    #[msg("Can't claim on a already withdrawn campaign")]
+    ClaimWithWithdraw,
 }

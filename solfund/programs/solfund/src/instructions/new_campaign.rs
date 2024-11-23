@@ -15,7 +15,7 @@ pub struct NewCampaign<'info> {
         seeds = [
             b"Campaign".as_ref(),
             owner.key().to_bytes().as_ref(),
-            title.as_bytes().as_ref(),
+            title.as_bytes(),
         ],
         // The bump of the account
         bump,
