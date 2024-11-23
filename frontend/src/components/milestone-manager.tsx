@@ -3,11 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Trash2, Plus } from 'lucide-react'
-
-export interface Milestone {
-  description: string
-  target: number
-}
+import { Milestone } from '@/types/campaign'
 
 interface MilestoneManagerProps {
   milestones: Milestone[]

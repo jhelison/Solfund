@@ -32,14 +32,6 @@ export const AppBar: React.FC = () => {
               Create Campaign
             </Link>
           </li>
-          <li>
-            <Link
-              href="/my-contributions"
-              className="text-gray-600 hover:text-gray-900"
-            >
-              My Contributions
-            </Link>
-          </li>
         </ul>
       </nav>
       <WalletMultiButtonDynamic className="btn-ghost btn-sm rounded-btn text-lg mr-6 " />

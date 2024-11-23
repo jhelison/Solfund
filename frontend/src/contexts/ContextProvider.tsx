@@ -9,6 +9,9 @@ import { AutoConnectProvider, useAutoConnect } from './AutoConnectProvider';
 import { notify } from "../utils/notifications";
 import { NetworkConfigurationProvider, useNetworkConfiguration } from './NetworkConfigurationProvider';
 import dynamic from "next/dynamic";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 const ReactUIWalletModalProviderDynamic = dynamic(
   async () =>
@@ -54,11 +57,13 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
 export const ContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     return (
         <>
+        <QueryClientProvider client={queryClient}>
             <NetworkConfigurationProvider>
                 <AutoConnectProvider>
                     <WalletContextProvider>{children}</WalletContextProvider>
                 </AutoConnectProvider>
             </NetworkConfigurationProvider>
+        </QueryClientProvider>
         </>
     );
 };
