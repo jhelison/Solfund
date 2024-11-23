@@ -1,20 +1,11 @@
-import type { NextPage } from "next";
-import Head from "next/head";
-import { HomeView } from "../views";
+import CampaignList from "@/components/campaign-list";
+// import { CampaignFilters } from "@/components/campaign-filters";
 
-const Home: NextPage = (props) => {
+export default function Home() {
   return (
-    <div>
-      <Head>
-        <title>Solana Scaffold</title>
-        <meta
-          name="description"
-          content="Solana Scaffold"
-        />
-      </Head>
-      <HomeView />
+    <div className="space-y-6">
+      {/* <CampaignFilters /> */}
+      <CampaignList />
     </div>
   );
-};
-
-export default Home;
+}
