@@ -167,6 +167,77 @@ describe("solfund", () => {
       }
     });
   });
+  describe("Update campaign URI", async () => {
+    let default_campaign_pda: anchor.web3.PublicKey;
+    let deployer: anchor.web3.Keypair;
+
+    before(async () => {
+      // Airdrop tokens for the deployment
+      deployer = await fundNewKey(provider.connection);
+
+      // Initialize the campaign
+      let _bump: any;
+      [default_campaign_pda, _bump] = await createAndInitializeCampaignAccount(
+        program,
+        deployer,
+        default_title,
+        default_goal,
+        default_end_ts,
+        default_URI
+      );
+    });
+    it("Update the URI", async () => {
+      // Update the URI as normal
+      await program.methods
+        .updateCampaignUri("new uri")
+        .accounts({
+          campaign: default_campaign_pda,
+          owner: deployer.publicKey,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        } as any)
+        .signers([deployer])
+        .rpc();
+
+      // Check if it's ok
+      await checkCampaign(program, default_campaign_pda, {
+        metadata_uri: "new uri",
+      });
+    });
+    it("Fail with URI empty", async () => {
+      // Try tou update the URI
+      try {
+        await program.methods
+          .updateCampaignUri("                ")
+          .accounts({
+            campaign: default_campaign_pda,
+            owner: deployer.publicKey,
+            systemProgram: anchor.web3.SystemProgram.programId,
+          } as any)
+          .signers([deployer])
+          .rpc();
+      } catch (error) {
+        assert.strictEqual(error.error.errorCode.code, "CampaignURIEmpty");
+      }
+    });
+    it("Fail with URI too big", async () => {
+      // Try tou update the URI
+      try {
+        await program.methods
+          .updateCampaignUri(
+            "https://stackoverflow.com/questions/52856496/typescript-object-keys-return-string"
+          ) // Huge URI
+          .accounts({
+            campaign: default_campaign_pda,
+            owner: deployer.publicKey,
+            systemProgram: anchor.web3.SystemProgram.programId,
+          } as any)
+          .signers([deployer])
+          .rpc();
+      } catch (error) {
+        assert.strictEqual(error.error.errorCode.code, "CampaignURITooBig");
+      }
+    });
+  });
   describe("New contribution", async () => {
     let default_campaign_pda: anchor.web3.PublicKey;
     let total_contributed: number;
