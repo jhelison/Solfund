@@ -14,9 +14,17 @@ export default function CampaignList() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {campaigns.map((campaign) => (
-        <CampaignCard key={campaign.address} campaign={campaign} />
-      ))}
+      {campaigns
+        .sort((a, b) => {
+          if (a.address === "9JckBA58KvqHhTXU59Ld1tioNCuZXfYghjpdWU48JcXJ")
+            return -1;
+          if (b.address === "9JckBA58KvqHhTXU59Ld1tioNCuZXfYghjpdWU48JcXJ")
+            return 1;
+          return 0;
+        })
+        .map((campaign) => (
+          <CampaignCard key={campaign.address} campaign={campaign} />
+        ))}
     </div>
   );
 }
