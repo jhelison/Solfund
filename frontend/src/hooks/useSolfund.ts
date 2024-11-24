@@ -15,11 +15,13 @@ export function useSolfundProgram() {
 
   const provider = useMemo(() => {
     if (!wallet || !wallet.publicKey) return null;
-    console.log(connection.rpcEndpoint)
+    console.log(connection.rpcEndpoint);
     return new AnchorProvider(connection, wallet, {
       preflightCommitment: "confirmed",
     });
   }, [connection, wallet]);
+
+  console.log("useSolfundProgram RPC", connection.rpcEndpoint);
 
   const program = useMemo(() => {
     if (!provider) return null;
