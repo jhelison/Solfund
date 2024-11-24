@@ -6,6 +6,7 @@ export interface Campaign {
   endDate: Date;
   totalFunds?: number,
   owner?: string;
+  is_successful?: boolean;
 
   ipfsData: IPFSCampaignData
 }

@@ -138,8 +138,7 @@ export default function CreateCampaign() {
       return;
     }
 
-    useNewCampaign.mutate({ campaign: campaignData, logo, banner });
-    // Redirect to the campaign page (you'd use the actual campaign ID in a real app)
+    await useNewCampaign.mutateAsync({ campaign: campaignData, logo, banner });
     router.push("/")
   };
 

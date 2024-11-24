@@ -1,5 +1,6 @@
 import { CampaignDetails } from "@/components/campaign-details";
 import { ContributionForm } from "@/components/contribution-form";
+import { ManageCampaignForm } from "@/components/manage-campaign";
 import { RemoveContribution } from "@/components/remove-contribution-form";
 import { ShareButton } from "@/components/share-button";
 import {
@@ -61,7 +62,10 @@ export default function CampaignPage({ params }: { params: { id: string } }) {
       return (
         <div>
           <h2 className="text-2xl font-semibold mb-4">Your Contribution</h2>
-          <RemoveContribution campaignId={campaign?.address} contributionAmount={contribution.amount}/>
+          <RemoveContribution
+            campaignId={campaign?.address}
+            contributionAmount={contribution.amount}
+          />
         </div>
       );
     } else {
@@ -69,6 +73,17 @@ export default function CampaignPage({ params }: { params: { id: string } }) {
         <div>
           <h2 className="text-2xl font-semibold mb-4">Contribute</h2>
           <ContributionForm campaignId={campaign?.address} />
+        </div>
+      );
+    }
+  };
+
+  const getManagementComponent = () => {
+    if (campaign?.owner === publicKey?.toBase58()) {
+      return (
+        <div className="bg-gray-100 p-6 rounded-lg">
+          <h2 className="text-2xl font-semibold mb-4">Manage my campaign</h2>
+          <ManageCampaignForm campaign={campaign} />
         </div>
       );
     }
@@ -97,6 +112,7 @@ export default function CampaignPage({ params }: { params: { id: string } }) {
         <div className="bg-gray-100 p-6 rounded-lg">
           {getContributionComponent()}
         </div>
+        {getManagementComponent()}
       </div>
     </div>
   );

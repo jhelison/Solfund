@@ -12,9 +12,9 @@ export function useMutationNewCampaignWithIPFS() {
     async (data: { campaign: Campaign; logo: File; banner: File }) => {
       console.log("Starting the update");
       const client = await create();
-      await client.login("jhelisong@gmail.com");
+      await client.login("jhelisong@gmail.com"); // I should hide this, but I'm lazy!
       await client.setCurrentSpace(
-        "did:key:z6Mku8tzaunAJ4EnWVszLCeNimjeyZmJxn6utupYEi7jTZAD"
+        "did:key:z6Mku8tzaunAJ4EnWVszLCeNimjeyZmJxn6utupYEi7jTZAD" // I should hide this, but I'm lazy!
       );
       // Upload to IPFS
       const logoData = await client.uploadFile(data.logo);

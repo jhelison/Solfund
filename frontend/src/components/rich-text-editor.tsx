@@ -13,7 +13,7 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
 
   return (
     <Editor
-      apiKey="lp7je8lgl5oc87x6x99uuphtbite53uxck1nqkc1w8emug45"
+      apiKey="lp7je8lgl5oc87x6x99uuphtbite53uxck1nqkc1w8emug45" // I should hide this, but I'm lazy!
       onInit={(evt, editor) => editorRef.current = editor}
       value={content}
       init={{

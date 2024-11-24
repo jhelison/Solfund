@@ -149,6 +149,7 @@ async function solCampaignToCampaign(
     address: address.toBase58(),
     startDate: startTs,
     totalFunds: lamportsToSol(solCampaign.totalFunds.toNumber()),
+    is_successful: solCampaign.isSuccessful,
     ipfsData,
   };
 }
