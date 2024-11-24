@@ -1,0 +1,552 @@
+{
+  "address": "DqajaMsDVX9DiXt3Ld2p6C8QghNCRqkfcZBzkMF7PSQ7",
+  "metadata": {
+    "name": "solfund",
+    "version": "1.0.0",
+    "spec": "0.1.0",
+    "description": "Crowd funding app for solana"
+  },
+  "docs": [
+    "This is main entrypoint for the program"
+  ],
+  "instructions": [
+    {
+      "name": "claim_campaign",
+      "docs": [
+        "Claim a campaign"
+      ],
+      "discriminator": [
+        118,
+        195,
+        170,
+        16,
+        78,
+        8,
+        26,
+        38
+      ],
+      "accounts": [
+        {
+          "name": "campaign",
+          "docs": [
+            "The [Campaign]"
+          ],
+          "writable": true
+        },
+        {
+          "name": "owner",
+          "docs": [
+            "Owner for the campaign"
+          ],
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "new_campaign",
+      "docs": [
+        "Creates a new campaign"
+      ],
+      "discriminator": [
+        43,
+        98,
+        26,
+        97,
+        90,
+        97,
+        109,
+        37
+      ],
+      "accounts": [
+        {
+          "name": "campaign",
+          "docs": [
+            "[Campaign]"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  97,
+                  109,
+                  112,
+                  97,
+                  105,
+                  103,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "arg",
+                "path": "title"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "docs": [
+            "Owner for the campaign, also the payer for the fees"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "docs": [
+            "The [System] program."
+          ],
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "goal",
+          "type": "u64"
+        },
+        {
+          "name": "end_ts",
+          "type": "i64"
+        },
+        {
+          "name": "metadata_uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "new_contribution",
+      "docs": [
+        "Creates a new contribution"
+      ],
+      "discriminator": [
+        87,
+        184,
+        39,
+        4,
+        14,
+        32,
+        16,
+        172
+      ],
+      "accounts": [
+        {
+          "name": "campaign",
+          "docs": [
+            "The [Campaign]"
+          ],
+          "writable": true
+        },
+        {
+          "name": "contribution",
+          "docs": [
+            "The [Contribution]"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  110,
+                  116,
+                  114,
+                  105,
+                  98,
+                  117,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "contributor"
+              },
+              {
+                "kind": "account",
+                "path": "campaign"
+              }
+            ]
+          }
+        },
+        {
+          "name": "contributor",
+          "docs": [
+            "The contributor for the campaign, also the fee payer"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "docs": [
+            "The [System] program."
+          ],
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "remove_contribution",
+      "docs": [
+        "Remove a contribution"
+      ],
+      "discriminator": [
+        229,
+        193,
+        118,
+        68,
+        227,
+        144,
+        247,
+        50
+      ],
+      "accounts": [
+        {
+          "name": "campaign",
+          "docs": [
+            "The [Campaign]"
+          ],
+          "writable": true
+        },
+        {
+          "name": "contribution",
+          "docs": [
+            "The [Contribution]"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  110,
+                  116,
+                  114,
+                  105,
+                  98,
+                  117,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "contributor"
+              },
+              {
+                "kind": "account",
+                "path": "campaign"
+              }
+            ]
+          }
+        },
+        {
+          "name": "contributor",
+          "docs": [
+            "The contributor for the campaign",
+            "This is receiver of the closed account and must be the owner"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "docs": [
+            "The [System] program."
+          ],
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "update_campaign_uri",
+      "docs": [
+        "Update a campaign URI"
+      ],
+      "discriminator": [
+        140,
+        132,
+        170,
+        212,
+        192,
+        145,
+        92,
+        155
+      ],
+      "accounts": [
+        {
+          "name": "campaign",
+          "docs": [
+            "The [Campaign]"
+          ],
+          "writable": true
+        },
+        {
+          "name": "owner",
+          "docs": [
+            "Owner for the campaign"
+          ],
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "metadata_uri",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Campaign",
+      "discriminator": [
+        50,
+        40,
+        49,
+        11,
+        157,
+        220,
+        229,
+        192
+      ]
+    },
+    {
+      "name": "Contribution",
+      "discriminator": [
+        182,
+        187,
+        14,
+        111,
+        72,
+        167,
+        242,
+        212
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "CampaignTsNotBigEnough",
+      "msg": "Campaign end timestamp must be in the future and have at least 24 hours"
+    },
+    {
+      "code": 6001,
+      "name": "CampaignZeroGoal",
+      "msg": "Campaign goal must be bigger than zero"
+    },
+    {
+      "code": 6002,
+      "name": "CampaignURIEmpty",
+      "msg": "Campaign Metadata URI must be provided"
+    },
+    {
+      "code": 6003,
+      "name": "CampaignURITooBig",
+      "msg": "Campaign Metadata URI is too big"
+    },
+    {
+      "code": 6004,
+      "name": "CampaignTitleEmpty",
+      "msg": "Campaign title must be provided"
+    },
+    {
+      "code": 6005,
+      "name": "InteractionWithClosedCampaign",
+      "msg": "Can't interact with a expired campaign"
+    },
+    {
+      "code": 6006,
+      "name": "ZeroContribution",
+      "msg": "Contribution can't be zero"
+    },
+    {
+      "code": 6007,
+      "name": "Unauthorized",
+      "msg": "Account is not authorized to execute this instruction"
+    },
+    {
+      "code": 6008,
+      "name": "ArithmeticError",
+      "msg": "Arithmetic Error (overflow/underflow)"
+    },
+    {
+      "code": 6009,
+      "name": "ClaimOpenCampaign",
+      "msg": "Can't claim on open campaign"
+    },
+    {
+      "code": 6010,
+      "name": "ClaimNotSuccessCampaign",
+      "msg": "Can't claim on a not successful campaign"
+    },
+    {
+      "code": 6011,
+      "name": "ClaimWithWithdraw",
+      "msg": "Can't claim on a already withdrawn campaign"
+    }
+  ],
+  "types": [
+    {
+      "name": "Campaign",
+      "docs": [
+        "Represents a funding campaign on the system"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "docs": [
+              "The bump seed for the account"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "owner",
+            "docs": [
+              "The owner of the campaign"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "goal",
+            "docs": [
+              "The goal of the campaign (in lamports)"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "title",
+            "docs": [
+              "The title of the campaign"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "title_length",
+            "docs": [
+              "The length of the title"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "start_ts",
+            "docs": [
+              "When the campaign has started (unix timestamp)"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "end_ts",
+            "docs": [
+              "When the campaign will end (unix timestamp)"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "metadata_uri",
+            "docs": [
+              "The metadata for the campaign as IPFS hash"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "metadata_uri_length",
+            "docs": [
+              "The final size of the metadata URI"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "total_funds",
+            "docs": [
+              "The total funds on the account"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "is_successful",
+            "docs": [
+              "If the campaign has been successful"
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "is_withdrawn",
+            "docs": [
+              "If the owner has withdrawn the funds"
+            ],
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contribution",
+      "docs": [
+        "Represents a contribution"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "contributor",
+            "docs": [
+              "The owner of the contribution"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "docs": [
+              "The amount of the contribution"
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}

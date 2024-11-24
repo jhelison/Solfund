@@ -3,9 +3,9 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { AnchorProvider, Program, web3 } from "@coral-xyz/anchor";
 import { Idl } from "@coral-xyz/anchor";
-import idl from "../../../solfund/target/idl/solfund.json";// Ensure this path is correct
+import idl from "@/types/solfund.json";
 import { useMemo } from "react";
-import { Solfund } from "../../../solfund/target/types/solfund";
+import { Solfund } from "@/types/solfund";
 
 const solfundIdl = idl as unknown as Idl;
 
