@@ -143,3 +143,33 @@ export function useMutationRemoveContribution() {
     }
   });
 }
+
+export function useMutationClaimCampaign() {
+  const program = useSolfundProgram();
+  const { publicKey } = useWallet();
+
+  return useApiMutation(async (data: { campaign: string }) => {
+    // Start a tx
+    const tx = new Transaction();
+
+    // Get the campaign as pubkey
+    const campaignPubkey = new web3.PublicKey(data.campaign);
+
+    const claimCampaignInstruction =
+      program.instruction.claimCampaign({
+        accounts: {
+          campaign: campaignPubkey,
+          owner: publicKey,
+        },
+      });
+
+    tx.add(claimCampaignInstruction);
+
+    try {
+      const txHash = await program.provider.sendAndConfirm(tx);
+      console.log("Campaign created, transaction:", txHash);
+    } catch (error) {
+      console.error("Error creating campaign:", error);
+    }
+  });
+}

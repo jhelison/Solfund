@@ -63,7 +63,7 @@ export default function CampaignPage({ params }: { params: { id: string } }) {
         <div>
           <h2 className="text-2xl font-semibold mb-4">Your Contribution</h2>
           <RemoveContribution
-            campaignId={campaign?.address}
+            campaign={campaign}
             contributionAmount={contribution.amount}
           />
         </div>

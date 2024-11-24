@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useMutationRemoveContribution } from "@/hooks/mutations/solfund";
+import { useMutationClaimCampaign } from "@/hooks/mutations/solfund";
 import { Campaign } from "@/types/campaign";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -10,14 +10,14 @@ export function ManageCampaignForm({
 }: {
   campaign: Campaign
 }) {
-  const useRemoveContribution = useMutationRemoveContribution();
+  const useClaimCampaign = useMutationClaimCampaign();
   const queryClient = useQueryClient();
 
   const hasEnded = campaign.endDate < new Date()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    useRemoveContribution.mutateAsync(
+    useClaimCampaign.mutateAsync(
       {
         campaign: campaign.address,
       },
@@ -37,6 +37,7 @@ export function ManageCampaignForm({
     if (!campaign.is_successful) {
         return "The campaign was not successful"
     }
+    return "Claim campaign"
   }
 
   return (
@@ -48,7 +49,7 @@ export function ManageCampaignForm({
       <Button
         type="submit"
         className="w-full"
-        disabled={useRemoveContribution.isPending || !hasEnded || !campaign.is_successful}
+        disabled={useClaimCampaign.isPending || !hasEnded || !campaign.is_successful}
       >
         {getButtonText()}
       </Button>

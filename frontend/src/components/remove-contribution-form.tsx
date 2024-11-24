@@ -6,31 +6,41 @@ import { Input } from "@/components/ui/input";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useMutationRemoveContribution } from "@/hooks/mutations/solfund";
 import { useQueryClient } from "@tanstack/react-query";
+import { Campaign } from "@/types/campaign";
 
 export function RemoveContribution({
-  campaignId,
+  campaign,
   contributionAmount,
 }: {
-  campaignId: string;
+  campaign: Campaign;
   contributionAmount: number;
 }) {
   const useRemoveContribution = useMutationRemoveContribution();
   const queryClient = useQueryClient();
 
+  const hasEnded = campaign?.endDate < new Date()
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     useRemoveContribution.mutateAsync(
       {
-        campaign: campaignId,
+        campaign: campaign.address,
       },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["campaign", campaignId] });
+          queryClient.invalidateQueries({ queryKey: ["campaign", campaign.address] });
           queryClient.invalidateQueries({ queryKey: ["contribution"] });
         },
       }
     );
   };
+
+  const getButtonText = () => {
+    if (hasEnded) {
+      return "This campaign has ended"
+    }
+    return "Remove contribution"
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -40,9 +50,9 @@ export function RemoveContribution({
       <Button
         type="submit"
         className="w-full"
-        disabled={useRemoveContribution.isPending}
+        disabled={useRemoveContribution.isPending || hasEnded}
       >
-        Remove contribution
+        {getButtonText()}
       </Button>
     </form>
   );
