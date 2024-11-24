@@ -20,7 +20,7 @@ describe("solfund", () => {
   const curr_timestamp = Math.floor(Date.now() / 1000);
   const default_end_ts = curr_timestamp + SECONDS_PER_DAY + SECONDS_PER_DAY; // One hour and one day in the future
   const default_goal = 1_000_000_000; // 1 sol
-  const default_URI = "ipfs://example_metadata_uri";
+  const default_URI = "bafkreigafwt3udethbutf6i65xxqq7z2nr23vkzsu4cdx2gjfgvxgzqdzu";
 
   describe("New campaign", async () => {
     it("Initialize correctly", async () => {
@@ -120,7 +120,7 @@ describe("solfund", () => {
           default_title,
           default_goal,
           default_end_ts,
-          "https://stackoverflow.com/questions/52856496/typescript-object-keys-return-string" // Huge URI
+          "" // Huge URI
         );
       } catch (error) {
         assert.strictEqual(error.error.errorCode.code, "CampaignURITooBig");

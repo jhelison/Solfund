@@ -1,127 +1,136 @@
+# SolFund Frontend
 
-# Solana dApp Scaffold Next
+This repository contains the **frontend** for the **SolFund** Solana smart contract, built with **Next.js** and **React Query**.
 
-The Solana dApp Scaffold repos are meant to house good starting scaffolds for ecosystem developers to get up and running quickly with a front end client UI that integrates several common features found in dApps with some basic usage examples. Wallet Integration. State management. Components examples. Notifications. Setup recommendations.
+The contract is current deployed on DEVNET with the address:
 
-Responsive                     |  Desktop
-:-------------------------:|:-------------------------:
-![](scaffold-mobile.png)  |  ![](scaffold-desktop.png)
+- `DqajaMsDVX9DiXt3Ld2p6C8QghNCRqkfcZBzkMF7PSQ7`
 
-## Getting Started
+A FE is available at:
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+- https://solfund.jhelison.com/
 
-The responsive version for wallets and wallet adapter may not function or work as expected for mobile based on plugin and wallet compatibility. For more code examples and implementations please visit the [Solana Cookbook](https://solanacookbook.com/)
-
-## Installation
-
-```bash
-npm install
-# or
-yarn install
-```
-
-## Build and Run
-
-Next, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+---
 
 ## Features
 
-Each Scaffold will contain at least the following features:
+- **Campaign Management**:
 
+  - Create new campaigns with a title, goal, end date, and metadata URI.
+  - View active and completed campaigns.
+  - Claim funds from successful campaigns.
+
+- **Contributions**:
+
+  - Add contributions to campaigns.
+  - View contribution details.
+  - Remove contributions when applicable.
+
+---
+
+### TODO
+
+The following are open improvements to the project:
+
+1. Edit campaign
+
+- Users may be able to edit a campaign
+- The UI must be built for this
+
+2. Mobile
+
+- This app must be adapted for multiple screens
+- Responsiveness must be added
+
+## Getting Started
+
+### Prerequisites
+
+- **Node.js** (v16 or later)
+- **Yarn** or **npm**
+- Wallet setup (e.g., [Phantom](https://phantom.app/)) for Solana transactions.
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone <repository-url>
+   cd solfund-frontend
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   yarn install
+   # or
+   npm install
+   ```
+
+3. Start the development server:
+
+   ```bash
+   yarn dev
+   # or
+   npm run dev
+   ```
+
+4. Open the app in your browser at [http://localhost:3000](http://localhost:3000).
+
+---
+
+## Key Technologies
+
+- **Next.js**: Framework for server-rendered and static web applications.
+- **React Query**: Data fetching, caching, and synchronization for API and blockchain calls.
+- **Solana Web3.js**: Library for interacting with the Solana blockchain.
+- **Tailwind CSS**: Utility-first styling for a responsive design.
+- **IPFS**: IPFS is used as storage for data
+
+---
+
+## Project Structure
+
+```plaintext
+├── components       # Reusable UI components
+├── hooks            # Custom hooks for blockchain and query logic
+├── pages            # Next.js routes (e.g., Home, Campaigns)
+├── public           # Static assets
+├── services         # API and blockchain service functions
+├── styles           # Global and module-specific styles
+└── utils            # Utility functions (e.g., formatting, error handling)
 ```
-Wallet Integration with Auto Connec / Refresh
 
-State Management
+---
 
-Components: One or more components demonstrating state management
+## Usage
 
-Web3 Js: Examples of one or more uses of web3 js including a transaction with a connection provider
+### Creating a Campaign
 
-Sample navigation and page changing to demonstate state
+1. Connect your wallet using the **Connect Wallet** button.
+2. Navigate to the **Create Campaign** page.
+3. Fill in the details (title, goal, end date, metadata URI).
+4. Submit the form and approve the transaction in your wallet.
 
-Clean Simple Styling 
+### Contributing to a Campaign
 
-Notifications (optional): Example of using a notification system
+1. Select an active campaign from the **Campaigns** page.
+2. Enter the contribution amount and confirm.
+3. Approve the transaction in your wallet.
 
-```
+### Claiming Funds
 
-A Solana Components Repo will be released in the near future to house a common components library.
+1. Campaign owners can navigate to their campaign's details page.
+2. Click the **Claim Funds** button to retrieve funds.
 
-
-### Structure
-
-The scaffold project structure may vary based on the front end framework being utilized. The below is an example structure for the Next js Scaffold.
- 
-```
-├── public : publically hosted files
-├── src : primary code folders and files 
-│   ├── components : should house anything considered a resuable UI component
-│   ├── contexts` : any context considered reusable and useuful to many compoennts that can be passed down through a component tree
-│   ├── hooks` : any functions that let you 'hook' into react state or lifecycle features from function components
-│   ├── models` : any data structure that may be reused throughout the project
-│   ├── pages` : the pages that host meta data and the intended `View` for the page
-│   ├── stores` : stores used in state management
-│   ├── styles` : contain any global and reusable styles
-│   ├── utils` : any other functionality considered reusable code that can be referenced
-│   ├── views` : contains the actual views of the project that include the main content and components within
-style, package, configuration, and other project files
-
-```
+---
 
 ## Contributing
 
-Anyone is welcome to create an issue to build, discuss or request a new feature or update to the existing code base. Please keep in mind the following when submitting an issue. We consider merging high value features that may be utilized by the majority of scaffold users. If this is not a common feature or fix, consider adding it to the component library or cookbook. Please refer to the project's architecture and style when contributing. 
+Contributions are welcome! If you encounter any bugs or have feature suggestions, please open an issue or submit a pull request.
 
-If submitting a feature, please reference the project structure shown above and try to follow the overall architecture and style presented in the existing scaffold.
+---
 
-### Committing
+## License
 
-To choose a task or make your own, do the following:
-
-1. [Add an issue](https://github.com/solana-dev-adv/solana-dapp-next/issues/new) for the task and assign it to yourself or comment on the issue
-2. Make a draft PR referencing the issue.
-
-The general flow for making a contribution:
-
-1. Fork the repo on GitHub
-2. Clone the project to your own machine
-3. Commit changes to your own branch
-4. Push your work back up to your fork
-5. Submit a Pull request so that we can review your changes
-
-**NOTE**: Be sure to merge the latest from "upstream" before making a 
-pull request!
-
-You can find tasks on the [project board](https://github.com/solana-dev-adv/solana-dapp-next/projects/1) 
-or create an issue and assign it to yourself.
-
-
-## Learn More Next Js
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This project is licensed under the [MIT License](../LICENSE).
