@@ -14,14 +14,25 @@ export function useSolfundProgram() {
   const wallet = useWallet();
 
   const provider = useMemo(() => {
-    if (!wallet || !wallet.publicKey) return null;
-    console.log(connection.rpcEndpoint);
-    return new AnchorProvider(connection, wallet, {
-      preflightCommitment: "confirmed",
-    });
+    if (wallet.connected && wallet.publicKey) {
+      return new AnchorProvider(connection, wallet, {
+        preflightCommitment: "confirmed",
+      });
+    } else {
+      // Create a read-only provider if no wallet is connected
+      return new AnchorProvider(
+        connection,
+        {
+          publicKey: null, // Read-only mode
+          signTransaction: async (tx) => tx,
+          signAllTransactions: async (txs) => txs,
+        } as any, // Cast as Wallet for Anchor compatibility
+        {
+          preflightCommitment: "confirmed",
+        }
+      );
+    }
   }, [connection, wallet]);
-
-  console.log("useSolfundProgram RPC", connection.rpcEndpoint);
 
   const program = useMemo(() => {
     if (!provider) return null;
