@@ -41,6 +41,9 @@ export default function CampaignPage({ params }: { params: { id: string } }) {
       milestoneProgress = 100;
     }
 
+    // Parse the float to avoid issues with too many decimals
+    milestoneProgress = parseFloat(milestoneProgress.toFixed(2));
+
     return (
       <div key={index}>
         <div className="flex justify-between mb-1">
